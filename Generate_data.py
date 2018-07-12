@@ -3,14 +3,16 @@ import sys
 
 # To use this script, specify one file, like
 # 'python Generate_data.py sample_data.txt'
-# The output file is saved as 'data.txt' in current directory 
+# The output file is saved as 'data.txt' in current directory
 
 if len(sys.argv) != 2:
     print('Please specify input file')
     exit()
 
 in_file = open(sys.argv[1])
-out_file = open('data.txt', 'w')
+file_name = (((sys.argv[1]).replace('\\', '.').replace('/',
+                                                       '.').split('.')))[-2]
+out_file = open(file_name + '_out.txt', 'w')
 
 for i, line in enumerate(in_file):
     # print(line)

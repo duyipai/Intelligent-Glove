@@ -1,0 +1,12 @@
+pose = load('pose.txt');
+length = size(pose, 1);
+t = 0.01:0.01:length * 0.01;
+subplot(1,3,1);
+plot(t, pose(:, 1));
+title('roll');
+subplot(1,3,2);
+plot(t, pose(:, 2));
+title('pitch');
+subplot(1,3,3);
+plot(t, pose(:, 3));
+title('yaw');
