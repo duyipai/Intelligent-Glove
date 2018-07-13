@@ -15,7 +15,7 @@
 /**
  * Default constant values if they are not provided
  */
-#define DEFAULT_g0 9.8189
+#define DEFAULT_g0 9.8
 #define DEFAULT_state {0,0,1,0,0,0}
 #define DEFAULT_q_dcm2 (0.1*0.1)
 #define DEFAULT_q_gyro_bias2 (0.0001*0.0001)
