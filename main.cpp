@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 #include "math.h"
-#define PI 3.1415926536
+#define PI 3.1415926535898
 #define SAMPLING_TIME 0.01
 #define axBias 18.4895
 #define ayBias -16.2859
