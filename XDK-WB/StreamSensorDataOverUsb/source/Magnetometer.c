@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*
-* Licensee agrees that the example code provided to Licensee has been developed and released by Bosch solely as an example to be used as a potential reference for Licensee’s application development. 
-* Fitness and suitability of the example code for any use within Licensee’s applications need to be verified by Licensee on its own authority by taking appropriate state of the art actions and measures (e.g. by means of quality assurance measures).
+* Licensee agrees that the example code provided to Licensee has been developed and released by Bosch solely as an example to be used as a potential reference for Licenseeï¿½s application development. 
+* Fitness and suitability of the example code for any use within Licenseeï¿½s applications need to be verified by Licensee on its own authority by taking appropriate state of the art actions and measures (e.g. by means of quality assurance measures).
 * Licensee shall be responsible for conducting the development of its applications as well as integration of parts of the example code into such applications, taking into account the state of the art of technology and any statutory regulations and provisions applicable for such applications. Compliance with the functional system requirements and testing there of (including validation of information/data security aspects and functional safety) and release shall be solely incumbent upon Licensee. 
 * For the avoidance of doubt, Licensee shall be responsible and fully liable for the applications and any distribution of such applications into the market.
 * 
@@ -83,7 +83,7 @@
 #include <stdio.h>
 
 /* constant definitions ***************************************************** */
-#define TIMERDELAY       UINT32_C(3000)          /**< three seconds delay is represented by this macro */
+#define TIMERDELAY       UINT32_C(10)          /**< three seconds delay is represented by this macro */
 #define TIMERBLOCKTIME   UINT32_C(0xffff)        /** Macro used to define blocktime of a timer*/
 #define ZEROVALUE        UINT32_C(0x00)          /** Macro used to define default value*/
 #define TIMER_NOT_ENOUGH_MEMORY            (-1L)/**<Macro to define not enough memory error in timer*/
@@ -114,10 +114,10 @@ static void processMagnetometerData(void * param1, uint32_t param2)
     if ( RETCODE_OK == sensorApiRetValue)
     {
         /*prints the magnetometer lsb data from  BMM150 Magnetometer on serialport */
-        printf("BMM150 Magnetometer lsb Data :\n\rx =%ld\n\ry =%ld\n\rz =%ld\n\r",
-                (long int) getMagData.xAxisData,
-                (long int) getMagData.yAxisData,
-                (long int) getMagData.zAxisData);
+        //printf("BMM150 Magnetometer lsb Data :\n\rx =%ld\n\ry =%ld\n\rz =%ld\n\r",
+          //      (long int) getMagData.xAxisData,
+            //    (long int) getMagData.yAxisData,
+              //  (long int) getMagData.zAxisData);
     }
     else
     {
@@ -128,7 +128,7 @@ static void processMagnetometerData(void * param1, uint32_t param2)
     {
         /*prints the magnetometer converted data of BMM150 on serialport */
         printf(
-                "BMM150 Magnetometer Converted data :\n\rx =%ld microTesla\n\ry =%ld microTesla\n\rz =%ld microTesla\n\r",
+                "Mag: %ld %ld %ld \n",
                 (long int) getMagData.xAxisData,
                 (long int) getMagData.yAxisData,
                 (long int) getMagData.zAxisData);

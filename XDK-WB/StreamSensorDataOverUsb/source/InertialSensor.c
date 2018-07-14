@@ -117,7 +117,7 @@ static void processInertiaSensor(void * param1, uint32_t param2)
     if (RETCODE_OK == accelReturnValue)
     {
         /*print  Accel data of BMI160 on serialport */
-        printf("Acc: %ld %ld %ld \n",
+        printf("Acc:I %ld %ld %ld \n",
                 (long int) getaccelData.xAxisData, (long int) getaccelData.yAxisData, (long int) getaccelData.zAxisData);
     }
     else
@@ -138,7 +138,7 @@ static void processInertiaSensor(void * param1, uint32_t param2)
     gyroReturnValue = Gyroscope_readXyzDegreeValue(xdkGyroscope_BMI160_Handle, &getConvData);
     if (RETCODE_OK == gyroReturnValue)
     {
-        printf("Gyr: %ld %ld %ld \n",
+        printf("Gyr:I %ld %ld %ld \n",
                 (long int) getConvData.xAxisData, (long int) getConvData.yAxisData, (long int) getConvData.zAxisData);
 
     }

@@ -119,7 +119,7 @@ static void processGyroData(void * param1, uint32_t param2)
     advancedApiRetValue = Gyroscope_readXyzDegreeValue(xdkGyroscope_BMG160_Handle, &getMdegData);
     if (RETCODE_OK == advancedApiRetValue)
     {
-        printf("Gyr:mDeg %ld %ld %ld\n",
+        printf("Gyr:O %ld %ld %ld\n",
                 (long int) getMdegData.xAxisData, (long int) getMdegData.yAxisData, (long int) getMdegData.zAxisData);
 
     }

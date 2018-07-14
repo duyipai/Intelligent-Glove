@@ -219,7 +219,7 @@ static void processAccelData(void * param1, uint32_t param2)
     if ( RETCODE_OK == Accelerometer_readXyzGValue(xdkAccelerometers_BMA280_Handle, &getaccelData))
     {
         /*print chip id and Accel data of BMA280 on serialport */
-        printf("Acc:mg %ld %ld %ld \n",
+        printf("Acc:O %ld %ld %ld \n",
                 (long int) getaccelData.xAxisData, (long int) getaccelData.yAxisData, (long int) getaccelData.zAxisData);
     }
     else

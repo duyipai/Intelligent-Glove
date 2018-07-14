@@ -89,14 +89,14 @@ void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
     Retcode_T returnValue = RETCODE_OK;
 
     /* Initialize all sensors */
-    //returnValue = accelerometerSensorInit();
+    returnValue = accelerometerSensorInit();
     if (RETCODE_OK == returnValue)
     {
        // returnValue = environmentalSensorInit();
     }
     if (RETCODE_OK == returnValue)
     {
-        //returnValue = gyroscopeSensorInit();
+        returnValue = gyroscopeSensorInit();
     }
     if (RETCODE_OK == returnValue)
     {
@@ -104,7 +104,7 @@ void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
     }
     if (RETCODE_OK == returnValue)
     {
-        //returnValue = magnetometerSensorInit();
+        returnValue = magnetometerSensorInit();
     }
     if (RETCODE_OK == returnValue)
     {
@@ -125,7 +125,7 @@ void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
 Retcode_T deinit(void)
 {
     Retcode_T returnValue = RETCODE_OK;
-    //returnValue = accelerometerSensorDeinit();
+    returnValue = accelerometerSensorDeinit();
 
     if (RETCODE_OK == returnValue)
     {
@@ -133,7 +133,7 @@ Retcode_T deinit(void)
     }
     if (RETCODE_OK == returnValue)
     {
-        //returnValue = gyroscopeSensorDeinit();
+        returnValue = gyroscopeSensorDeinit();
     }
     if (RETCODE_OK == returnValue)
     {
