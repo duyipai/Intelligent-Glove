@@ -142,12 +142,6 @@ class callback : public virtual mqtt::callback,
 			<< "\nPress Q<Enter> to quit\n" << std::endl;
 
 		cli_.subscribe(TOPIC, QOS, nullptr, subListener_);
-		Est.reset();
-		for(int i = 0; i < 3; ++i)
-		{
-			v[3] = {0.0};
-			prevAcc[3] = {0.0};
-		}
 	}
 
 	// Callback for when the connection is lost.
@@ -173,6 +167,17 @@ class callback : public virtual mqtt::callback,
 		double t;
 		is >> t;
 		t /= 1000;
+		if (fabs(t-prevt) > 0.1)
+		{
+			std::cout<<"status reseted"<<std::endl;
+			prevt = t;
+			Est.reset();
+			for(int i = 0; i < 3; ++i)
+			{
+				v[i] = 0.0;
+				prevAcc[i] = 0.0;
+			}
+		}
         is >> a[0];
         is >> a[1];
         is >> a[2];
