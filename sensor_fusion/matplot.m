@@ -20,10 +20,10 @@ subplot(2,3,6);
 plot(t, pose(:, 6));
 title('z');
 %% 
-data=load('stable_out.txt');
+data=load('3_out.txt');
 xbias = mean(data(:,1));
 ybias = mean(data(:,2));
-g = mean(data(:,3));
+zbias = mean(data(:,3));
 xd = mean(data(:,4));
 yd = mean(data(:,5));
 zd = mean(data(:,6));
