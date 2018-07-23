@@ -23,7 +23,7 @@ static StringDescr_T TestDescription;
  * after it was passed to the Serval stack in the setup method.
  */
 static const char* MQTT_CLIENT_ID = "1234";
-static const char* MQTT_BROKER_HOST = "192.168.0.103";
+static const char* MQTT_BROKER_HOST = "192.168.0.102";
 static const uint16_t MQTT_BROKER_PORT = 1883;
 
 static MqttSession_T mqttSession;

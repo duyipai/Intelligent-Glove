@@ -1,5 +1,5 @@
-C:/Users/kongw/XDK-Workspace/MqttApp/debug/objects/MqttApp.o: \
- C:/Users/kongw/XDK-Workspace/MqttApp/source/MqttApp.c \
+C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/debug/objects/MqttApp.o: \
+ C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/MqttApp.c \
  ../Common/include/XdkSensorHandle.h \
  ../Platform/Sensors/include/BCDS_Accelerometer.h \
  ../Platform/Essentials/include/BCDS_Retcode.h \
@@ -21,9 +21,9 @@ C:/Users/kongw/XDK-Workspace/MqttApp/debug/objects/MqttApp.o: \
  ../Platform/SensorToolbox/include/BCDS_LinearAcceleration.h \
  ../Platform/SensorToolbox/include/BCDS_Gestures.h \
  ../Platform/Essentials/include/BCDS_Basics.h \
- C:/Users/kongw/XDK-Workspace/MqttApp/source/ConnectivityMQTTMessaging.h \
- C:/Users/kongw/XDK-Workspace/MqttApp/source/SensorEnvironment.h \
- C:/Users/kongw/XDK-Workspace/MqttApp/source/XdkExceptions.h
+ C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/ConnectivityMQTTMessaging.h \
+ C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/SensorEnvironment.h \
+ C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/XdkExceptions.h
 
 ../Common/include/XdkSensorHandle.h:
 
@@ -67,8 +67,8 @@ C:/Users/kongw/XDK-Workspace/MqttApp/debug/objects/MqttApp.o: \
 
 ../Platform/Essentials/include/BCDS_Basics.h:
 
-C:/Users/kongw/XDK-Workspace/MqttApp/source/ConnectivityMQTTMessaging.h:
+C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/ConnectivityMQTTMessaging.h:
 
-C:/Users/kongw/XDK-Workspace/MqttApp/source/SensorEnvironment.h:
+C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/SensorEnvironment.h:
 
-C:/Users/kongw/XDK-Workspace/MqttApp/source/XdkExceptions.h:
+C:/Users/yipai.du/Documents/Intelligent-Glove/xdkProj/MqttApp/source/XdkExceptions.h:

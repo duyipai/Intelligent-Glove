@@ -15,14 +15,11 @@ file_name = (((sys.argv[1]).replace('\\', '.').replace('/',
 out_file = open(file_name + '_out.txt', 'w')
 
 for i, line in enumerate(in_file):
-    # print(line)
+    if i % 2 == 1:
+        continue
     words = line.split()
     words = words[-9:]
     out_file.write(' '.join(words))
-    # if i % 2 == 1:
-    #     out_file.write('\n')
-    # else:
-    #     out_file.write(' ')
     out_file.write('\n')
 in_file.close()
 out_file.close()

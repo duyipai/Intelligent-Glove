@@ -8,6 +8,8 @@
 
 // Defines
 #define M_2PI 6.2831853071795864769
+#define M_PI_2 1.57079632679
+#define M_PI 3.14159265359
 
 // Namespaces
 using namespace std;
