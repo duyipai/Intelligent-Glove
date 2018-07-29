@@ -1,8 +1,3 @@
-// Attitude estimator based on the fusion of 3-axis accelerometer, gyroscope and magnetometer data
-// File: attitude_estimator.h
-// Author: Philipp Allgeuer <pallgeuer@ais.uni-bonn.de>
-
-// Ensure header is only included once
 #ifndef ATTITUDE_ESTIMATOR_H
 #define ATTITUDE_ESTIMATOR_H
 

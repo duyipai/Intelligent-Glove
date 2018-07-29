@@ -1,8 +1,3 @@
-// Attitude estimator based on the fusion of 3-axis accelerometer, gyroscope and magnetometer data
-// File: attitude_estimator.cpp
-// Author: Philipp Allgeuer <pallgeuer@ais.uni-bonn.de>
-
-// Includes
 #include "attitude_estimator.h"
 #include <cmath>
 
