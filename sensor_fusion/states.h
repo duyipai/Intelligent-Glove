@@ -4,12 +4,12 @@
 enum STAGE
 {
     STATIONARY = 0,
-    TRASLATION,
+    TRANSLATION,
     ROTATION
 
 };
 
-string STAGE_OUTPUT[3]={'stationary', 'translation', 'rotation'};
+std::string STAGE_OUTPUT[3]={"stationary", "translation", "rotation"};
 
 struct States
 {
