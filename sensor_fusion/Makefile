@@ -33,7 +33,7 @@ endif
 
 LDLIBS += -L../../lib -L$(PAHO_C_LIB_DIR) -lpaho-mqttpp3 -lpaho-mqtt3a
 
-subscribe: subscribe.cpp attitude_estimator.cpp
+subscribe: subscribe.cpp attitude_estimator.cpp message_processor.cpp states.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
 # Cleanup
 

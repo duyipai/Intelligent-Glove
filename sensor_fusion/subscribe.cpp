@@ -32,7 +32,6 @@
 
 #include <iostream>
 #include <sstream>
-#include "math.h"
 #include <cstdlib>
 #include <string>
 #include <cstring>
@@ -40,22 +39,12 @@
 #include <thread>
 #include <chrono>
 #include "mqtt/async_client.h"
-#include "attitude_estimator.h"
 #include "states.h"
-#define DEFAULT_g0 9.81
-#define M_PI 3.1415926535898
-#define RESET_VECILOTY_COUNTER 4
-#define ACC_THRESHOLD 2.0
-#define ANGULAR_UPPER_THRESHOLD 0.5
-#define ANGULAR_LOWER_THRESOHLD 0.1
+#include "message_processor.h"
 
 const std::string SERVER_ADDRESS("tcp://localhost:1883");
 const std::string CLIENT_ID("subscribe");
 const std::string TOPIC("XDK1");
-
-stateestimation::AttitudeEstimator Est;
-double v[3] = {0.0};
-double prevAcc[3] = {0.0};
 
 const int QOS = 1;
 const int N_RETRY_ATTEMPTS = 5;
@@ -172,144 +161,21 @@ class callback : public virtual mqtt::callback,
 	// Callback for when a message arrives.
 	void message_arrived(mqtt::const_message_ptr msg) override
 	{
-		static States states;
-		double globalAcc[3];
 		std::istringstream is(msg->to_string());
-		double w[3];
-		double a[3];
-		double m[3];
-		double t;
-		is >> t;
-		t /= 1000;
-		if (fabs(t - states.t) > 0.5)
+		States states;
+		try
 		{
-			std::cout << "status reseted" << std::endl;
-			states.t = t;
-			Est.reset();
-			for (int i = 0; i < 3; ++i)
-			{
-				states.v[i] = 0.0;
-				prevAcc[i] = 0.0;
-			}
+			states = process_message(is);
 		}
-		is >> a[0];
-		is >> a[1];
-		is >> a[2];
-		is >> w[0];
-		is >> w[1];
-		is >> w[2];
-		is >> m[0];
-		is >> m[1];
-		is >> m[2];
-		for (int i = 0; i < 3; ++i)
+		catch (const char * msg)
 		{
-			w[i] /= 1000.0 * 180 / M_PI;
-			a[i] /= -1000.0 / DEFAULT_g0;
+			std::cerr << msg << std::endl;
+			return;
 		}
-		Est.update(t - states.t, w[0], w[1], w[2], a[0], a[1], a[2], m[0], m[1], m[2]);
-		// update rotationl states
-		states.w[0] = (Est.eulerRoll() - states.roll);
-		while (states.w[0] > 2 * M_PI - 0.5)
-		{
-			states.w[0] -= 2 * M_PI;
-		}
-		while (states.w[0] < -2 * M_PI + 0.5)
-		{
-			states.w[0] += 2 * M_PI;
-		}
-		states.w[1] = (Est.eulerPitch() - states.pitch);
-		while (states.w[1] > M_PI - 0.2)
-		{
-			states.w[1] -= M_PI;
-		}
-		while (states.w[1] < -M_PI + 0.2)
-		{
-			states.w[1] += M_PI;
-		}
-		states.w[2] = (Est.eulerYaw() - states.yaw);
-		while (states.w[2] > 2 * M_PI - 0.2)
-		{
-			states.w[2] -= 2 * M_PI;
-		}
-		while (states.w[2] < -2 * M_PI + 0.2)
-		{
-			states.w[2] += 2 * M_PI;
-		}
-		states.yaw = Est.eulerYaw();
-		states.pitch = Est.eulerPitch();
-		states.roll = Est.eulerRoll();
-		double angular_speed = sqrt(pow(states.w[0], 2) + pow(states.w[1], 2) + pow(states.w[2], 2));
-
-		double cosPsi = cos(Est.eulerYaw());
-		double sinPsi = sin(Est.eulerYaw());
-		double cosTheta = cos(Est.eulerPitch());
-		double sinTheta = sin(Est.eulerPitch());
-		double cosPhi = cos(Est.eulerRoll());
-		double sinPhi = sin(Est.eulerRoll());
-		globalAcc[0] = cosTheta * cosPsi * a[0] + (sinPhi * sinTheta * cosPsi - cosPhi * sinPsi) * a[1] + (cosPhi * sinTheta * cosPsi + sinPhi * sinPsi) * a[2];
-		globalAcc[1] = cosTheta * sinPsi * a[0] + (sinPhi * sinTheta * sinPsi + cosPhi * cosPsi) * a[1] + (cosPhi * sinTheta * sinPsi - sinPhi * cosPsi) * a[2];
-		globalAcc[2] = -sinTheta * a[0] + sinPhi * cosTheta * a[1] + cosPhi * cosTheta * a[2] - DEFAULT_g0;
-
-		// update linear states
-		for (int i = 0; i < 3; ++i)
-		{
-			if (fabs(globalAcc[i]) < ACC_THRESHOLD)
-			{
-				globalAcc[i] = 0.0;
-			}
-			states.v[i] += (prevAcc[i] + globalAcc[i]) * (t - states.t) / 2.0;
-			prevAcc[i] = globalAcc[i];
-		}
-		if (states.stage == STATIONARY)
-		{
-			if (angular_speed > ANGULAR_UPPER_THRESHOLD)
-			{
-				states.stage = ROTATION;
-			}
-			else if (fabs(globalAcc[0]) + fabs(globalAcc[1]) + fabs(globalAcc[2]) != 0.0)
-			{
-				states.stage = TRANSLATION;
-				states.stationaryCount = 0;
-			}
-		}
-		else if (states.stage == TRANSLATION)
-		{
-			if (angular_speed > ANGULAR_UPPER_THRESHOLD)
-			{
-				states.stage = ROTATION;
-			}
-			else if (fabs(globalAcc[0]) + fabs(globalAcc[1]) + fabs(globalAcc[2]) == 0.0)
-			{
-				states.stationaryCount++;
-				if (states.stationaryCount >= RESET_VECILOTY_COUNTER)
-				{
-
-					states.stage = STATIONARY;
-					for (int i = 0; i < 3; ++i)
-					{
-						states.v[i] = 0.0;
-					}
-				}
-			}
-		}
-		else // at rotation
-		{
-			if(angular_speed < ANGULAR_LOWER_THRESOHLD)
-			{
-				if (fabs(globalAcc[0]) + fabs(globalAcc[1]) + fabs(globalAcc[2]) == 0.0)
-				{
-					states.stage = STATIONARY;
-				}
-				else 
-				{
-					states.stage = TRANSLATION;
-				}
-			}		
-		}
-		states.t = t;
 		std::cout << "roll: " << states.roll << " pitch: " << states.pitch << " yaw: " << states.yaw;
 		std::cout << " Vx: " << states.v[0] << " Vy: " << states.v[1] << " Vz: " << states.v[2] << '\t';
-		std::cout << STAGE_OUTPUT[states.stage] << angular_speed << std::endl;
+		extern std::string STAGE_OUTPUT[3];
+		std::cout << STAGE_OUTPUT[states.stage] << states.angular_speed << std::endl;
 	}
 
 	void
