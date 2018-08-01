@@ -1,19 +1,21 @@
 #include "message_processor.h"
 #include "attitude_estimator.h"
 #include "math.h"
+#include "states.h"
+#include <iostream>
 #define DEFAULT_g0 9.81
 #define M_PI 3.1415926535898
 #define RESET_VECILOTY_COUNTER 2
-#define ACC_THRESHOLD 1.3
-#define ANGULAR_UPPER_THRESHOLD 0.6
-#define ANGULAR_LOWER_THRESOHLD 0.4
+#define ACC_THRESHOLD 1.5
+#define ANGULAR_UPPER_THRESHOLD 1.0
+#define ANGULAR_LOWER_THRESOHLD 0.2
 
 
 States process_message(std::istringstream &message_stream)
 {
     static States states;
     static stateestimation::AttitudeEstimator Est;
-    static double prevAcc[3] = {0.0};
+    Est.setPIGains(2.20, 4.65, 10.0, 1.25);
 
 	double globalAcc[3];
     double w[3];
@@ -25,14 +27,13 @@ States process_message(std::istringstream &message_stream)
     t /= 1000;
     if (fabs(t - states.t) > 0.7)
     {
-        throw "status reseted";
         states.t = t;
         Est.reset();
         for (int i = 0; i < 3; ++i)
         {
-            states.v[i] = 0.0;
-            prevAcc[i] = 0.0;
+            states.set_Stationary();
         }
+        throw "status reseted";
         return states;
     }
     message_stream >> a[0];
@@ -47,41 +48,41 @@ States process_message(std::istringstream &message_stream)
     for (int i = 0; i < 3; ++i)
     {
         w[i] /= 1000.0 * 180 / M_PI;
-        a[i] /= -1000.0 / DEFAULT_g0;
+        a[i] /= -1000.0;
     }
     Est.update(t - states.t, w[0], w[1], w[2], a[0], a[1], a[2], m[0], m[1], m[2]);
     // update rotationl states
-    states.w[0] = (Est.eulerRoll() - states.roll);
-    while (states.w[0] > 2 * M_PI - 0.5)
+    w[0] = (Est.eulerRoll() - states.roll);
+    while (w[0] > 2 * M_PI - 0.7)
     {
-        states.w[0] -= 2 * M_PI;
+        w[0] -= 2 * M_PI;
     }
-    while (states.w[0] < -2 * M_PI + 0.5)
+    while (w[0] < -2 * M_PI + 0.7)
     {
-        states.w[0] += 2 * M_PI;
+        w[0] += 2 * M_PI;
     }
-    states.w[1] = (Est.eulerPitch() - states.pitch);
-    while (states.w[1] > M_PI - 0.2)
+    w[1] = (Est.eulerPitch() - states.pitch);
+    while (w[1] > M_PI - 0.3)
     {
-        states.w[1] -= M_PI;
+        w[1] -= M_PI;
     }
-    while (states.w[1] < -M_PI + 0.2)
+    while (w[1] < -M_PI + 0.3)
     {
-        states.w[1] += M_PI;
+        w[1] += M_PI;
     }
-    states.w[2] = (Est.eulerYaw() - states.yaw);
-    while (states.w[2] > 2 * M_PI - 0.2)
+    w[2] = (Est.eulerYaw() - states.yaw);
+    while (w[2] > 2 * M_PI - 0.7)
     {
-        states.w[2] -= 2 * M_PI;
+        w[2] -= 2 * M_PI;
     }
-    while (states.w[2] < -2 * M_PI + 0.2)
+    while (w[2] < -2 * M_PI + 0.7)
     {
-        states.w[2] += 2 * M_PI;
+        w[2] += 2 * M_PI;
     }
     states.yaw = Est.eulerYaw();
     states.pitch = Est.eulerPitch();
     states.roll = Est.eulerRoll();
-    states.angular_speed = sqrt(pow(states.w[0], 2) + pow(states.w[1], 2) + pow(states.w[2], 2));
+    double angular_speed = sqrt(pow(w[0], 2) + pow(w[1], 2) + pow(w[2], 2));
 
     double cosPsi = cos(Est.eulerYaw());
     double sinPsi = sin(Est.eulerYaw());
@@ -91,61 +92,56 @@ States process_message(std::istringstream &message_stream)
     double sinPhi = sin(Est.eulerRoll());
     globalAcc[0] = cosTheta * cosPsi * a[0] + (sinPhi * sinTheta * cosPsi - cosPhi * sinPsi) * a[1] + (cosPhi * sinTheta * cosPsi + sinPhi * sinPsi) * a[2];
     globalAcc[1] = cosTheta * sinPsi * a[0] + (sinPhi * sinTheta * sinPsi + cosPhi * cosPsi) * a[1] + (cosPhi * sinTheta * sinPsi - sinPhi * cosPsi) * a[2];
-    globalAcc[2] = -sinTheta * a[0] + sinPhi * cosTheta * a[1] + cosPhi * cosTheta * a[2] - DEFAULT_g0;
+    globalAcc[2] = -sinTheta * a[0] + sinPhi * cosTheta * a[1] + cosPhi * cosTheta * a[2] - 1.025;
 
-    // update linear states
+    double chopAcc[3];
     for (int i = 0; i < 3; ++i)
     {
-        if (fabs(globalAcc[i]) < ACC_THRESHOLD)
+        globalAcc[i] *= DEFAULT_g0;
+        chopAcc[i] = globalAcc[i];
+        if (fabs(chopAcc[i]) < ACC_THRESHOLD)
         {
-            globalAcc[i] = 0.0;
+            chopAcc[i] = 0.0;
         }
-        states.v[i] += (prevAcc[i] + globalAcc[i]) * (t - states.t) / 2.0;
-        prevAcc[i] = globalAcc[i];
     }
+
     if (states.stage == STATIONARY)
     {
-        if (states.angular_speed > ANGULAR_UPPER_THRESHOLD)
+        if (angular_speed > ANGULAR_UPPER_THRESHOLD)
         {
-            states.stage = ROTATION;
+            states.set_Rotation(w);
         }
-        else if (fabs(globalAcc[0]) + fabs(globalAcc[1]) + fabs(globalAcc[2]) != 0.0)
+        else if (fabs(chopAcc[0]) + fabs(chopAcc[1]) + fabs(chopAcc[2]) != 0.0)
         {
-            states.stage = TRANSLATION;
-            states.stationaryCount = 0;
+           states.set_Translation(globalAcc);
         }
     }
     else if (states.stage == TRANSLATION)
     {
-        if (states.angular_speed > ANGULAR_UPPER_THRESHOLD)
+        if (angular_speed > ANGULAR_UPPER_THRESHOLD)
         {
-            states.stage = ROTATION;
+            states.set_Rotation(w);
         }
-        else if (fabs(globalAcc[0]) + fabs(globalAcc[1]) + fabs(globalAcc[2]) == 0.0)
+        else if (fabs(chopAcc[0]) + fabs(chopAcc[1]) + fabs(chopAcc[2]) == 0.0)
         {
             states.stationaryCount++;
             if (states.stationaryCount >= RESET_VECILOTY_COUNTER)
             {
-
-                states.stage = STATIONARY;
-                for (int i = 0; i < 3; ++i)
-                {
-                    states.v[i] = 0.0;
-                }
+                states.set_Stationary();
             }
         }
     }
     else // at rotation
     {
-        if (states.angular_speed < ANGULAR_LOWER_THRESOHLD)
+        if (angular_speed < ANGULAR_LOWER_THRESOHLD)
         {
-            if (fabs(globalAcc[0]) + fabs(globalAcc[1]) + fabs(globalAcc[2]) == 0.0)
+            if (fabs(chopAcc[0]) + fabs(chopAcc[1]) + fabs(chopAcc[2]) == 0.0)
             {
-                states.stage = STATIONARY;
+                states.set_Stationary();
             }
             else
             {
-                states.stage = TRANSLATION;
+                states.set_Translation(globalAcc);
             }
         }
     }

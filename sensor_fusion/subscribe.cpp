@@ -173,9 +173,15 @@ class callback : public virtual mqtt::callback,
 			return;
 		}
 		std::cout << "roll: " << states.roll << " pitch: " << states.pitch << " yaw: " << states.yaw;
-		std::cout << " Vx: " << states.v[0] << " Vy: " << states.v[1] << " Vz: " << states.v[2] << '\t';
+		std::cout << " ax: " << states.a[0] << " ay: " << states.a[1] << " az: " << states.a[2] << '\t';
 		extern std::string STAGE_OUTPUT[3];
-		std::cout << STAGE_OUTPUT[states.stage] << states.angular_speed << std::endl;
+		std::cout << STAGE_OUTPUT[states.stage];
+		double tmplat[3] = {0.0, 0.0, 1.0};
+		if (states.stage == TRANSLATION && states.linear_dot(tmplat) > 0.8)
+		{
+			std::cout << "combo!";
+		}
+		std::cout << std::endl;
 	}
 
 	void
