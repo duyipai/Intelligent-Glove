@@ -24,11 +24,12 @@ export BCDS_XDK_INCLUDES = \
 #List all the application source file under variable BCDS_XDK_APP_SOURCE_FILES in a similar pattern as below
 export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/Main.c \
-	$(BCDS_APP_SOURCE_DIR)/MqttApp.c \
+	$(BCDS_APP_SOURCE_DIR)/SensorButtonOne.c \
 	$(BCDS_APP_SOURCE_DIR)/SensorEnvironment.c \
 	$(BCDS_APP_SOURCE_DIR)/ConnectivityMQTTMessaging.c \
 	$(BCDS_APP_SOURCE_DIR)/ConnectivityWLANWireless.c \
 	$(BCDS_APP_SOURCE_DIR)/XdkTime.c \
+	$(BCDS_APP_SOURCE_DIR)/MqttApp.c \
 
 .PHONY: clean	debug release flash_debug_bin flash_release_bin
 

@@ -12,6 +12,7 @@
 #include "XdkTime.h"
 #include "XdkEvents.h"
 #include "XdkExceptions.h"
+#include "SensorButtonOne.h"
 
 Retcode_T XdkLive_initialize(void);
 Retcode_T XdkLive_goLive(void* userParameter1, uint32_t userParameter2);
@@ -104,6 +105,16 @@ Retcode_T XdkLive_initialize(void)
 		return exception;
 	}
 
+	exception = SensorButton_one_Setup();
+	if(exception == NO_EXCEPTION)
+	{
+		printf("[INFO, %s:%d] setup SensorButton_one succeeded\n", __FILE__, __LINE__);
+	}
+	else
+	{
+		printf("[ERROR, %s:%d] failed to setup SensorButton_one\n", __FILE__, __LINE__);
+		return exception;
+	}
 
 	return NO_EXCEPTION;
 }
@@ -113,6 +124,17 @@ Retcode_T XdkLive_goLive(void* userParameter1, uint32_t userParameter2)
 	BCDS_UNUSED(userParameter1);
 	BCDS_UNUSED(userParameter2);
 	Retcode_T exception = NO_EXCEPTION;
+
+	exception = SensorButton_one_Enable();
+		if(exception == NO_EXCEPTION)
+		{
+			printf("[INFO, %s:%d] enable SensorButton_one succeeded\n", __FILE__, __LINE__);
+		}
+		else
+		{
+			printf("[ERROR, %s:%d] failed to enable SensorButton_one\n", __FILE__, __LINE__);
+			return exception;
+		}
 
 	exception = ConnectivityWLANWireless_Enable();
 	if(exception == NO_EXCEPTION)
@@ -134,7 +156,7 @@ Retcode_T XdkLive_goLive(void* userParameter1, uint32_t userParameter2)
 		printf("[ERROR, %s:%d] failed to enable ConnectivityMQTTMessaging\n", __FILE__, __LINE__);
 		return exception;
 	}
-	timerHandle = xTimerCreate("timerHandle", UINT32_C(300), pdTRUE, NULL, InternalHandle);
+	timerHandle = xTimerCreate("timerHandle", UINT32_C(10), pdTRUE, NULL, InternalHandle);
 	xTimerStart(timerHandle, UINT32_C(0xffff));
 	if(exception == NO_EXCEPTION)
 	{

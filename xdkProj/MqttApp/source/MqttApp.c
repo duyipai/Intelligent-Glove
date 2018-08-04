@@ -9,7 +9,7 @@
 #include "ConnectivityMQTTMessaging.h"
 #include "SensorEnvironment.h"
 #include "XdkExceptions.h"
-
+#include "MqttApp.h"
 
 /*
 Retcode_T HandleEvery10mS(void)
@@ -116,6 +116,23 @@ Retcode_T HandleEvery10mS(void* userParameter1, uint32_t userParameter2)
 			myMag.xAxisData, myMag.yAxisData, myMag.zAxisData);
 
 	char* _newConnectivityMQTTMessaging_Test_0 = result;
+	exception = ConnectivityMQTTMessaging_Test_Write(&_newConnectivityMQTTMessaging_Test_0);
+	if(exception != NO_EXCEPTION) return exception;
+
+
+	return NO_EXCEPTION;
+}
+
+Retcode_T HandleEveryButtonOnePressed(void* userParameter1, uint32_t userParameter2)
+{
+
+	BCDS_UNUSED(userParameter1);
+	BCDS_UNUSED(userParameter2);
+
+	Retcode_T exception = NO_EXCEPTION;
+
+
+	char* _newConnectivityMQTTMessaging_Test_0 = "button pressed\n";
 	exception = ConnectivityMQTTMessaging_Test_Write(&_newConnectivityMQTTMessaging_Test_0);
 	if(exception != NO_EXCEPTION) return exception;
 
