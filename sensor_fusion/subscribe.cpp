@@ -38,13 +38,17 @@
 #include <cctype>
 #include <thread>
 #include <chrono>
+#include <deque>
 #include "mqtt/async_client.h"
 #include "states.h"
 #include "message_processor.h"
 
 const std::string SERVER_ADDRESS("tcp://localhost:1883");
 const std::string CLIENT_ID("subscribe");
-const std::string TOPIC("XDK1");
+const std::string TOPIC("XDK");
+bool learning_mode = false;
+double rotation_start_time = -1.0; // negative if not in rotation
+std::deque <States> states_queue;
 
 const int QOS = 1;
 const int N_RETRY_ATTEMPTS = 5;
@@ -161,6 +165,21 @@ class callback : public virtual mqtt::callback,
 	// Callback for when a message arrives.
 	void message_arrived(mqtt::const_message_ptr msg) override
 	{
+		if (msg->to_string() == "button pressed\n")
+		{	
+			learning_mode = !learning_mode;
+			if (learning_mode)
+				states_queue.clear();
+			return;
+		}
+		if (learning_mode)
+		{
+			std::cout << "learning mode: ";
+		}
+		else
+		{
+			std::cout << "doing mode: ";
+		}
 		std::istringstream is(msg->to_string());
 		States states;
 		try
@@ -172,16 +191,10 @@ class callback : public virtual mqtt::callback,
 			std::cerr << msg << std::endl;
 			return;
 		}
-		std::cout << "roll: " << states.roll << " pitch: " << states.pitch << " yaw: " << states.yaw;
-		std::cout << " ax: " << states.a[0] << " ay: " << states.a[1] << " az: " << states.a[2] << '\t';
-		extern std::string STAGE_OUTPUT[3];
-		std::cout << STAGE_OUTPUT[states.stage];
-		double tmplat[3] = {0.0, 0.0, 1.0};
-		if (states.stage == TRANSLATION && states.linear_dot(tmplat) > 0.8)
-		{
-			std::cout << "combo!";
-		}
-		std::cout << std::endl;
+
+		std::ostringstream output_stream = stage_analysis(states, states_queue, learning_mode);
+
+		std::cout << output_stream.str() << std::endl;
 	}
 
 	void
