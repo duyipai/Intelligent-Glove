@@ -6,8 +6,8 @@
 #define DEFAULT_g0 9.81
 #define M_PI 3.1415926535898
 #define RESET_VECILOTY_THRESHOLD 2
-#define TRANSLATION_COUNT_THRESHOLD 3
-#define ACC_THRESHOLD 1.5
+#define TRANSLATION_COUNT_THRESHOLD 2
+#define ACC_THRESHOLD 1.0
 #define ANGULAR_UPPER_THRESHOLD 1.0
 #define ANGULAR_LOWER_THRESOHLD 0.2
 
@@ -162,6 +162,7 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
 {
     std::ostringstream return_val;
     extern std::string STAGE_OUTPUT[3];
+    static States prev_States;
     return_val << "roll: " << states.roll << " pitch: " << states.pitch << " yaw: " << states.yaw << STAGE_OUTPUT[states.stage] << std::endl;
     if (learning_mode)
     {
@@ -214,13 +215,17 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
                 return_val << " ax: " << states_queue.front().a[0] << " ay: " << states_queue.front().a[1] << " az: " << states_queue.front().a[2];
             }
         }
+        while(!states_queue.empty() && states_queue.front().stage == TRANSLATION && states_queue.front().translation_count < TRANSLATION_COUNT_THRESHOLD)
+        {
+            states_queue.pop_front();
+        }
     }
 
     if (states.stage == STATIONARY)
     {
         ready_for_next_stage = true;
     }
-    else if (states.stage == ROTATION && !states_queue.empty() && states_queue.back().stage == TRANSLATION && states_queue.back().translation_count < TRANSLATION_COUNT_THRESHOLD)
+    else if (states.stage == ROTATION && !states_queue.empty() && prev_States.stage == TRANSLATION)
     {
         if (learning_mode)
             states_queue.pop_back();
@@ -230,5 +235,6 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
     {
         ready_for_next_stage = false;
     }
+    prev_States = states;
     return return_val;
 }
