@@ -72,7 +72,7 @@ Retcode_T HandleEvery10mS(void* userParameter1, uint32_t userParameter2)
 	BCDS_UNUSED(userParameter2);
 
 	Retcode_T exception = NO_EXCEPTION;
-	char result[60];
+	char result[80];
 
 	Environmental_Data_T myEnvironment;
 	Accelerometer_XyzData_T myAccelEmbedded, myAccelInertial;
@@ -105,6 +105,7 @@ Retcode_T HandleEvery10mS(void* userParameter1, uint32_t userParameter2)
 			"%d %d %d "
 			"%d %d %d "
 			"%d %d %d "
+			"%d %d %d"
 			"\n",
 			(int) xTaskGetTickCountFromISR(),
 			(6923*myAccelEmbedded.xAxisData + 3077*myAccelInertial.xAxisData)/10000,
@@ -113,7 +114,13 @@ Retcode_T HandleEvery10mS(void* userParameter1, uint32_t userParameter2)
 			myConvInertial.xAxisData,
 			myConvInertial.yAxisData,
 			myConvInertial.zAxisData,
-			myMag.xAxisData, myMag.yAxisData, myMag.zAxisData);
+			myMag.xAxisData,
+			myMag.yAxisData,
+			myMag.zAxisData,
+			myEnvironment.pressure,
+			myEnvironment.temperature,
+			myEnvironment.humidity
+	);
 
 	char* _newConnectivityMQTTMessaging_Test_0 = result;
 	exception = ConnectivityMQTTMessaging_Test_Write(&_newConnectivityMQTTMessaging_Test_0);

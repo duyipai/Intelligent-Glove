@@ -156,7 +156,7 @@ Retcode_T XdkLive_goLive(void* userParameter1, uint32_t userParameter2)
 		printf("[ERROR, %s:%d] failed to enable ConnectivityMQTTMessaging\n", __FILE__, __LINE__);
 		return exception;
 	}
-	timerHandle = xTimerCreate("timerHandle", UINT32_C(10), pdTRUE, NULL, InternalHandle);
+	timerHandle = xTimerCreate("timerHandle", UINT32_C(40), pdTRUE, NULL, InternalHandle);
 	xTimerStart(timerHandle, UINT32_C(0xffff));
 	if(exception == NO_EXCEPTION)
 	{

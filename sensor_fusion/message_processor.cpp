@@ -5,11 +5,11 @@
 #include <iostream>
 #define DEFAULT_g0 9.81
 #define M_PI 3.1415926535898
-#define RESET_VECILOTY_THRESHOLD 2
-#define TRANSLATION_COUNT_THRESHOLD 2
-#define ACC_THRESHOLD 1.0
-#define ANGULAR_UPPER_THRESHOLD 1.0
-#define ANGULAR_LOWER_THRESOHLD 0.2
+#define RESET_VECILOTY_THRESHOLD 12
+#define TRANSLATION_COUNT_THRESHOLD 12
+#define ACC_THRESHOLD 0.8
+#define ANGULAR_UPPER_THRESHOLD 0.2
+#define ANGULAR_LOWER_THRESOHLD 0.05
 
 static bool ready_for_next_stage = true; // if at stationary, ready to accept next stage, changed in stage_analysis
 
@@ -155,6 +155,10 @@ States process_message(std::istringstream &message_stream)
     }
     states.global_time = t;
 
+    message_stream >> states.pressure;
+    message_stream >> states.temperature;
+    states.temperature /= 1000;
+    message_stream >> states.humidity;
     return states;
 }
 
@@ -163,20 +167,23 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
     std::ostringstream return_val;
     extern std::string STAGE_OUTPUT[3];
     static States prev_States;
-    return_val << "roll: " << states.roll << " pitch: " << states.pitch << " yaw: " << states.yaw << STAGE_OUTPUT[states.stage] << std::endl;
+    return_val << "roll: " << states.roll << " pitch: " << states.pitch << " yaw: " << states.yaw <<" " << STAGE_OUTPUT[states.stage];
+    return_val << " " << states.pressure << " " << states.temperature << " " << states.humidity << " " << states_queue.size()<<std::endl;
     if (learning_mode)
     {
+        
+		return_val << "learning mode: ";
         if (ready_for_next_stage && states.stage != STATIONARY)
         {
             states_queue.push_back(states);
             return_val << STAGE_OUTPUT[states.stage] << " added. Stage size: " << states_queue.size() << std::endl;
         }
-        else if (states.stage == ROTATION && states_queue.back().stage == ROTATION)
+        else if (states.stage == ROTATION && !states_queue.empty() && states_queue.back().stage == ROTATION)
         {
             states_queue.pop_back();
             states_queue.push_back(states);
         }
-        else if (states.stage == TRANSLATION && states_queue.back().stage == TRANSLATION)
+        else if (states.stage == TRANSLATION && !states_queue.empty() && states_queue.back().stage == TRANSLATION)
         {
             states.translation_count = (states_queue.back().translation_count)+1;
             states_queue.pop_back();
@@ -185,9 +192,10 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
     }
     else
     {
+		return_val << "doing mode: ";
         if (states_queue.empty())
         {
-            return_val << "finished all the steps";
+            return_val << "finished all the steps" << std::endl;
         }
         else if (states_queue.front().stage == ROTATION)
         {
@@ -198,7 +206,7 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
             }
             else
             {
-                return_val << "rotation needed, direction ";
+                return_val << "rotation needed, direction";
                 return_val << " wx: " << states_queue.front().w[0] << " wy: " << states_queue.front().w[1] << " wz: " << states_queue.front().w[2];
             }
         }
@@ -211,7 +219,7 @@ std::ostringstream stage_analysis(States &states, std::deque<States> &states_que
             }
             else
             {
-                return_val << "translation needed, direction ";
+                return_val << "translation needed, direction";
                 return_val << " ax: " << states_queue.front().a[0] << " ay: " << states_queue.front().a[1] << " az: " << states_queue.front().a[2];
             }
         }

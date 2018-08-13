@@ -27,6 +27,9 @@ class States
     int translation_count = 0;
     double global_time = 0.0;
     STAGE stage = STATIONARY;
+    double temperature;
+    double humidity;
+    double pressure;
 };
 
 #endif

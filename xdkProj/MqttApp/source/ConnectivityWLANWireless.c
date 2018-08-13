@@ -9,8 +9,8 @@
 #include <BCDS_Retcode.h>
 #include "XdkExceptions.h"
 
-#define NETWORK_SSID "@PHICOMM_7A"
-#define NETWORK_PSK  "nycp8888"
+#define NETWORK_SSID "duyipai"
+#define NETWORK_PSK  "duyipai999"
 
 Retcode_T ConnectivityWLANWireless_Setup(void)
 {

@@ -42,6 +42,7 @@
 #include "mqtt/async_client.h"
 #include "states.h"
 #include "message_processor.h"
+#include <fstream>
 
 const std::string SERVER_ADDRESS("tcp://localhost:1883");
 const std::string CLIENT_ID("subscribe");
@@ -172,14 +173,6 @@ class callback : public virtual mqtt::callback,
 				states_queue.clear();
 			return;
 		}
-		if (learning_mode)
-		{
-			std::cout << "learning mode: ";
-		}
-		else
-		{
-			std::cout << "doing mode: ";
-		}
 		std::istringstream is(msg->to_string());
 		States states;
 		try
@@ -195,6 +188,15 @@ class callback : public virtual mqtt::callback,
 		std::ostringstream output_stream = stage_analysis(states, states_queue, learning_mode);
 
 		std::cout << output_stream.str() << std::endl;
+		std::ofstream file1;
+		file1.open("output1.txt", std::ofstream::trunc);
+		file1 << output_stream.str();
+		file1.close();
+
+		std::ofstream file2;
+		file2.open("output2.txt", std::ofstream::trunc);
+		file2 << output_stream.str();
+		file2.close();
 	}
 
 	void
