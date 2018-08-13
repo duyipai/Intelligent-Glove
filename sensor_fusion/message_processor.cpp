@@ -5,9 +5,9 @@
 #include <iostream>
 #define DEFAULT_g0 9.81
 #define M_PI 3.1415926535898
-#define RESET_VECILOTY_THRESHOLD 12
-#define TRANSLATION_COUNT_THRESHOLD 12
-#define ACC_THRESHOLD 0.8
+#define RESET_VECILOTY_THRESHOLD 12 // stationary for time duration longer than this would be counted
+#define TRANSLATION_COUNT_THRESHOLD 12// translations larger than this time would be counted
+#define ACC_THRESHOLD 0.8 // supression of accelerations lower than this
 #define ANGULAR_UPPER_THRESHOLD 0.2
 #define ANGULAR_LOWER_THRESOHLD 0.05
 

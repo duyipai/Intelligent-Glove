@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>screw.jpg</file>
+        <file>cube.png</file>
+        <file>assemble.jpg</file>
+    </qresource>
+</RCC>
